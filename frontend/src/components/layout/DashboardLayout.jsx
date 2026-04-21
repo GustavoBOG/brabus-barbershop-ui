@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { LuHouse, LuCalendar, LuUsers, LuSettings, LuScissors, LuBell, LuSearch, LuMenu, LuX } from 'react-icons/lu';
+import { LuHouse, LuCalendar, LuUsers, LuSettings, LuScissors, LuBell, LuSearch, LuMenu, LuX, LuLogOut } from 'react-icons/lu';
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ children, user, onLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -38,6 +38,17 @@ export default function DashboardLayout({ children }) {
           <NavItem icon={<LuScissors size={20} />} label="SERVICES" />
           <NavItem icon={<LuSettings size={20} />} label="INVENTORY" />
         </nav>
+
+        {/* Logout Button */}
+        <div className="p-4 border-t border-white/5">
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/5 transition-all"
+          >
+            <LuLogOut size={18} />
+            <span className="text-[11px] font-bold tracking-widest uppercase">Cerrar Sesión</span>
+          </button>
+        </div>
       </aside>
 
       {/* Contenedor Principal (Topbar + Contenido) */}
@@ -70,11 +81,13 @@ export default function DashboardLayout({ children }) {
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex flex-col items-end">
-                <span className="text-sm font-bold text-white">Juan Carlos</span>
-                <span className="text-[10px] uppercase tracking-widest text-primary font-bold">MASTER BARBER</span>
+                <span className="text-sm font-bold text-white">{user?.full_name || 'Barbero'}</span>
+                <span className="text-[10px] uppercase tracking-widest text-primary font-bold">
+                  {user?.role === 'admin' ? 'ADMINISTRADOR' : 'MASTER BARBER'}
+                </span>
               </div>
               <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-card border-2 border-primary/30 overflow-hidden">
-                <img src="https://i.pravatar.cc/150?u=a04258" alt="Profile" className="w-full h-full object-cover" />
+                <img src={user?.avatar_url || "https://i.pravatar.cc/150?u=default"} alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>

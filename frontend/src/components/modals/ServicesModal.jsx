@@ -1,12 +1,6 @@
-import { LuX, LuCheck, LuClock } from 'react-icons/lu';
+import { LuX, LuCheck, LuClock, LuLoader } from 'react-icons/lu';
 import { useState, useEffect } from 'react';
-
-const availableServices = [
-  { id: 'corte', name: 'Corte', price: 20.00 },
-  { id: 'barba', name: 'Barba', price: 15.00 },
-  { id: 'cejas', name: 'Cejas', price: 5.00 },
-  { id: 'facial', name: 'Limpieza Facial', price: 25.00 },
-];
+import { servicesApi } from '../../services/api';
 
 const paymentMethods = [
   { id: 'Efectivo', label: 'Efectivo' },
@@ -15,10 +9,28 @@ const paymentMethods = [
 ];
 
 export default function ServicesModal({ isOpen, onClose, onSave }) {
+  const [availableServices, setAvailableServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedServices, setSelectedServices] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
   const [timeIn, setTimeIn] = useState('');
   const [timeOut, setTimeOut] = useState('');
+
+  // Cargar servicios desde la API
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        setLoading(true);
+        const data = await servicesApi.getAll();
+        setAvailableServices(data);
+      } catch (error) {
+        console.error('Error al cargar servicios:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchServices();
+  }, []);
 
   // Set default times to current time on open
   useEffect(() => {
@@ -44,15 +56,17 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
     if (selectedServices.length === 0) return;
 
     const selectedItems = availableServices.filter(s => selectedServices.includes(s.id));
-    const total = selectedItems.reduce((acc, curr) => acc + curr.price, 0);
+    const total = selectedItems.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
     const servicesNames = selectedItems.map(s => s.name).join(' + ');
 
+    // Pasamos también los IDs y categorías para el backend
     onSave({
       servicesNames,
       total,
       timeIn,
       timeOut,
-      paymentMethod
+      paymentMethod,
+      selectedItems, // Array con objetos {id, name, price, category}
     });
   };
 
@@ -109,34 +123,42 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
           {/* Services List */}
           <div className="flex flex-col gap-3">
             <h3 className="text-white/50 text-[11px] font-bold tracking-widest uppercase ml-1 mb-1">Servicios</h3>
-            {availableServices.map((service) => {
-              const isSelected = selectedServices.includes(service.id);
-              return (
-                <div 
-                  key={service.id}
-                  onClick={() => toggleService(service.id)}
-                  className={`flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all border ${
-                    isSelected 
-                      ? 'bg-primary/5 border-primary/40' 
-                      : 'bg-card border-transparent hover:border-white/10'
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-7 h-7 rounded-[0.5rem] border-2 flex items-center justify-center transition-all ${
-                      isSelected ? 'bg-primary border-primary' : 'border-white/20'
-                    }`}>
-                      {isSelected && <LuCheck size={16} className="text-[#0A0A0A] stroke-[4]" />}
+            
+            {loading ? (
+              <div className="flex items-center justify-center py-10">
+                <LuLoader size={24} className="text-primary animate-spin" />
+                <span className="ml-3 text-white/40 text-sm font-bold">Cargando servicios...</span>
+              </div>
+            ) : (
+              availableServices.map((service) => {
+                const isSelected = selectedServices.includes(service.id);
+                return (
+                  <div 
+                    key={service.id}
+                    onClick={() => toggleService(service.id)}
+                    className={`flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all border ${
+                      isSelected 
+                        ? 'bg-primary/5 border-primary/40' 
+                        : 'bg-card border-transparent hover:border-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-7 h-7 rounded-[0.5rem] border-2 flex items-center justify-center transition-all ${
+                        isSelected ? 'bg-primary border-primary' : 'border-white/20'
+                      }`}>
+                        {isSelected && <LuCheck size={16} className="text-[#0A0A0A] stroke-[4]" />}
+                      </div>
+                      <span className={`font-extrabold text-lg ${isSelected ? 'text-primary' : 'text-white'}`}>
+                        {service.name}
+                      </span>
                     </div>
-                    <span className={`font-extrabold text-lg ${isSelected ? 'text-primary' : 'text-white'}`}>
-                      {service.name}
+                    <span className="text-secondary font-black tracking-tighter text-xl">
+                      {parseFloat(service.price).toFixed(2)}€
                     </span>
                   </div>
-                  <span className="text-secondary font-black tracking-tighter text-xl">
-                    ${service.price.toFixed(2)}
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
           {/* Métodos de Pago */}
