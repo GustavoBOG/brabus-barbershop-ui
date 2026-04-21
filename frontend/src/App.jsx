@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Home from './components/home/Home';
 import LoginScreen from './components/auth/LoginScreen';
+import History from './components/history/History';
 import { authApi } from './services/api';
 
 function App() {
@@ -43,14 +45,43 @@ function App() {
     );
   }
 
-  if (!user) {
-    return <LoginScreen onLogin={handleLogin} />;
-  }
-
   return (
-    <DashboardLayout user={user} onLogout={handleLogout}>
-      <Home user={user} />
-    </DashboardLayout>
+    <Router>
+      <Routes>
+        <Route 
+          path="/login" 
+          element={!user ? <LoginScreen onLogin={handleLogin} /> : <Navigate to="/" />} 
+        />
+        
+        <Route 
+          path="/" 
+          element={
+            user ? (
+              <DashboardLayout user={user} onLogout={handleLogout}>
+                <Home user={user} />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        <Route 
+          path="/history" 
+          element={
+            user ? (
+              <DashboardLayout user={user} onLogout={handleLogout}>
+                <History user={user} />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 

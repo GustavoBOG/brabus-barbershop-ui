@@ -80,3 +80,23 @@ export const workRecordsApi = {
       body: JSON.stringify(record),
     }),
 };
+
+// ═══════════════════════════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════════════════════════
+
+export const historyApi = {
+  getShifts: (barberId, from, to) => {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    const qs = params.toString();
+    return request(`/history/${barberId}${qs ? '?' + qs : ''}`);
+  },
+
+  getDaily: (barberId, month) => {
+    const params = month ? `?month=${month}` : '';
+    return request(`/history/${barberId}/daily${params}`);
+  },
+};
+

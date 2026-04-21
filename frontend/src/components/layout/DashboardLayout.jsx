@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { LuHouse, LuCalendar, LuUsers, LuSettings, LuScissors, LuBell, LuSearch, LuMenu, LuX, LuLogOut } from 'react-icons/lu';
+import { NavLink } from 'react-router-dom';
+import { LuHouse, LuCalendar, LuUsers, LuSettings, LuScissors, LuBell, LuSearch, LuMenu, LuX, LuLogOut, LuClock } from 'react-icons/lu';
 
 export default function DashboardLayout({ children, user, onLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -32,11 +33,12 @@ export default function DashboardLayout({ children, user, onLogout }) {
         </div>
         
         <nav className="flex-1 py-8 flex flex-col gap-1">
-          <NavItem icon={<LuHouse size={20} />} label="DASHBOARD" active />
-          <NavItem icon={<LuCalendar size={20} />} label="APPOINTMENTS" />
-          <NavItem icon={<LuUsers size={20} />} label="STAFF" />
-          <NavItem icon={<LuScissors size={20} />} label="SERVICES" />
-          <NavItem icon={<LuSettings size={20} />} label="INVENTORY" />
+          <NavItem to="/" icon={<LuHouse size={20} />} label="DASHBOARD" />
+          <NavItem to="/history" icon={<LuClock size={20} />} label="HISTORIAL" />
+          <NavItem to="/appointments" icon={<LuCalendar size={20} />} label="APPOINTMENTS" disabled />
+          <NavItem to="/staff" icon={<LuUsers size={20} />} label="STAFF" disabled />
+          <NavItem to="/services" icon={<LuScissors size={20} />} label="SERVICES" disabled />
+          <NavItem to="/inventory" icon={<LuSettings size={20} />} label="INVENTORY" disabled />
         </nav>
 
         {/* Logout Button */}
@@ -94,7 +96,7 @@ export default function DashboardLayout({ children, user, onLogout }) {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 pt-4 lg:pt-2">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pt-4 lg:pt-2 overflow-y-auto">
           {children}
         </main>
       </div>
@@ -102,22 +104,37 @@ export default function DashboardLayout({ children, user, onLogout }) {
   );
 }
 
-function NavItem({ icon, label, active }) {
+function NavItem({ to, icon, label, disabled }) {
+  if (disabled) {
+    return (
+      <div className="relative w-full flex items-center gap-4 px-8 py-4 text-white/20 cursor-not-allowed">
+        <span>{icon}</span>
+        <span className="text-sm font-bold tracking-widest uppercase">{label}</span>
+      </div>
+    );
+  }
+
   return (
-    <button 
-      className={`relative w-full flex items-center gap-4 px-8 py-4 transition-all duration-300 ${
-        active 
+    <NavLink 
+      to={to}
+      className={({ isActive }) => `
+        relative w-full flex items-center gap-4 px-8 py-4 transition-all duration-300 group
+        ${isActive 
           ? 'bg-card/40 text-primary' 
           : 'text-white/50 hover:text-white/90 hover:bg-white/[0.02]'
-      }`}
+        }
+      `}
     >
-      {/* Indicador lateral */}
-      {(active) && (
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />
+      {({ isActive }) => (
+        <>
+          {isActive && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />
+          )}
+          <span className={isActive ? 'text-primary' : 'text-white/40 group-hover:text-white/70'}>{icon}</span>
+          <span className="text-sm font-bold tracking-widest uppercase">{label}</span>
+        </>
       )}
-      <span className={active ? 'text-primary' : 'text-white/40'}>{icon}</span>
-      <span className="text-sm font-bold tracking-widest uppercase">{label}</span>
-      
-    </button>
+    </NavLink>
   );
 }
+
