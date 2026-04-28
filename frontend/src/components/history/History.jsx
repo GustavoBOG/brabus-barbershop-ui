@@ -222,34 +222,62 @@ export default function History({ user }) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {selectedShift.work_records?.map((record) => (
-                      <tr key={record.id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="px-6 py-3">
-                          <span className="text-[10px] font-medium text-white/40">{formatTime(record.created_at)}</span>
-                        </td>
-                        <td className="px-6 py-3">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-white/90">{record.services?.name}</span>
-                            <span className="text-[10px] text-white/30">{record.client_name || 'Sin nombre'}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-3">
-                          <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                            record.payment_method === 'Efectivo' ? 'bg-emerald-500/10 text-emerald-500' :
-                            record.payment_method === 'Tarjeta' ? 'bg-blue-500/10 text-blue-500' :
-                            'bg-amber-500/10 text-amber-500'
-                          }`}>
-                            {record.payment_method}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-right">
-                          <span className="text-sm font-black text-white">{parseFloat(record.total_price).toFixed(2)}€</span>
-                        </td>
-                      </tr>
-                    ))}
+                    {(() => {
+                      const groupedRecords = [];
+                      selectedShift.work_records?.forEach(record => {
+                        const last = groupedRecords[groupedRecords.length - 1];
+                        // Agrupar si tienen el mismo client_name y fueron creados con menos de 5s de diferencia
+                        if (last && last.client_name === record.client_name && 
+                            Math.abs(new Date(last.created_at) - new Date(record.created_at)) < 5000) {
+                          // Es parte del mismo combo, ya está incluido en el client_name
+                        } else {
+                          groupedRecords.push(record);
+                        }
+                      });
+
+                      return groupedRecords.map((record) => (
+                        <tr key={record.id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="px-6 py-4">
+                            <span className="text-[10px] font-medium text-white/40">{formatTime(record.created_at)}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col gap-1.5">
+                              {(record.client_name || '').split(' + ').map((name, i) => (
+                                <div key={i} className="flex items-start gap-2">
+                                  <span className="text-white/30 mt-1 shrink-0">•</span>
+                                  <span className="text-sm font-bold text-white/90 leading-tight">
+                                    {name}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                              record.payment_method === 'Efectivo' ? 'bg-emerald-500/10 text-emerald-500' :
+                              record.payment_method === 'Tarjeta' ? 'bg-blue-500/10 text-blue-500' :
+                              'bg-amber-500/10 text-amber-500'
+                            }`}>
+                              {record.payment_method}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <span className="text-sm font-black text-white">
+                              {(() => {
+                                // Sumar el total de todos los registros que pertenecen a este mismo combo
+                                const groupTotal = selectedShift.work_records
+                                  .filter(r => r.client_name === record.client_name && Math.abs(new Date(r.created_at) - new Date(record.created_at)) < 5000)
+                                  .reduce((sum, r) => sum + parseFloat(r.total_price), 0);
+                                return groupTotal.toFixed(2);
+                              })()}€
+                            </span>
+                          </td>
+                        </tr>
+                      ));
+                    })()}
                     {(!selectedShift.work_records || selectedShift.work_records.length === 0) && (
                       <tr>
-                        <td colSpan="5" className="px-6 py-12 text-center text-white/20 text-sm italic">
+                        <td colSpan="4" className="px-6 py-12 text-center text-white/20 text-sm italic">
                           No hay servicios registrados en este turno.
                         </td>
                       </tr>

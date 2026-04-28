@@ -297,24 +297,33 @@ export default function Home({ user }) {
             ) : (
               <div className="flex flex-col gap-3">
                 {servicesList.map((svc, idx) => (
-                  <div key={svc.id || idx} className="flex items-center justify-between bg-[#1C1C1C] p-5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                    <div className="flex items-center gap-6">
-                      <div className="w-1.5 h-10 bg-primary rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
-                      <div className="flex flex-col gap-1">
-                        <span className="text-white font-extrabold text-lg tracking-wide">{svc.servicesNames}</span>
-                        <div className="flex items-center gap-3 mt-1">
-                           <span className="text-white/50 text-[11px] tracking-widest font-bold bg-[#131313] px-3 py-1.5 rounded-lg border border-white/5">
+                  <div key={svc.id || idx} className="flex items-center justify-between bg-[#1C1C1C] p-4 sm:p-5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors gap-4">
+                    <div className="flex items-center gap-3 sm:gap-6 min-w-0">
+                      <div className="w-1 self-stretch bg-primary rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)] shrink-0 my-1" />
+                      <div className="flex flex-col gap-1 min-w-0">
+                      <div className="flex flex-col gap-1 min-w-0">
+                        {svc.servicesNames.split(' + ').map((name, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="text-white/30 mt-1 shrink-0">•</span>
+                            <span className="text-white font-extrabold text-sm sm:text-base tracking-wide leading-tight truncate">
+                              {name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                           <span className="text-white/50 text-[10px] sm:text-[11px] tracking-widest font-bold bg-[#131313] px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/5 whitespace-nowrap">
                              {svc.timeIn} - {svc.timeOut}
                            </span>
-                           <span className="text-tertiary text-[11px] tracking-widest font-bold bg-tertiary/10 border border-tertiary/20 px-3 py-1.5 rounded-lg uppercase">
+                           <span className="text-tertiary text-[10px] sm:text-[11px] tracking-widest font-bold bg-tertiary/10 border border-tertiary/20 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg uppercase whitespace-nowrap">
                              {svc.paymentMethod}
                            </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-secondary font-black text-2xl leading-none">{svc.total.toFixed(2)}€</span>
-                      <span className="text-white/30 text-[10px] font-bold tracking-widest uppercase mt-1">EUR</span> 
+                    <div className="flex flex-col items-end shrink-0 ml-auto">
+                      <span className="text-secondary font-black text-xl sm:text-2xl leading-none">{svc.total.toFixed(2)}€</span>
+                      <span className="text-white/30 text-[9px] sm:text-[10px] font-bold tracking-widest uppercase mt-1">EUR</span> 
                     </div>
                   </div>
                 ))}

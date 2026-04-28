@@ -5,7 +5,7 @@ import { servicesApi } from '../../services/api';
 const paymentMethods = [
   { id: 'Efectivo', label: 'Efectivo' },
   { id: 'Tarjeta', label: 'Tarjeta' },
-  { id: 'Transferencia', label: 'Transferencia' }
+  { id: 'Bizum', label: 'Bizum' }
 ];
 
 export default function ServicesModal({ isOpen, onClose, onSave }) {
@@ -15,6 +15,8 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
   const [timeIn, setTimeIn] = useState('');
   const [timeOut, setTimeOut] = useState('');
+  const [amountReceived, setAmountReceived] = useState('');
+  const [change, setChange] = useState(null);
 
   // Cargar servicios desde la API
   useEffect(() => {
@@ -22,7 +24,25 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
       try {
         setLoading(true);
         const data = await servicesApi.getAll();
-        setAvailableServices(data);
+        
+        // Orden personalizado solicitado por el usuario
+        const customOrder = [
+          'Corte caballero',
+          'Corte niño',
+          'Arreglo barba',
+          'Diseño de cejas',
+          'Limpieza facial',
+          'Coloracion/tinte'
+        ];
+
+        const sortedData = [...data].sort((a, b) => {
+          const indexA = customOrder.indexOf(a.name);
+          const indexB = customOrder.indexOf(b.name);
+          // Si no está en la lista, lo mandamos al final
+          return (indexA === -1 ? 99 : indexA) - (indexB === -1 ? 99 : indexB);
+        });
+
+        setAvailableServices(sortedData);
       } catch (error) {
         console.error('Error al cargar servicios:', error);
       } finally {
@@ -41,6 +61,8 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
       setTimeOut(timeStr);
       setSelectedServices([]);
       setPaymentMethod('Efectivo');
+      setAmountReceived('');
+      setChange(null);
     }
   }, [isOpen]);
 
@@ -52,30 +74,38 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
     );
   };
 
+  const selectedItems = availableServices.filter(s => selectedServices.includes(s.id));
+  const total = selectedItems.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
+
+  const handleAmountReceivedChange = (value) => {
+    setAmountReceived(value);
+    const amount = parseFloat(value);
+    if (!isNaN(amount) && amount >= total) {
+      setChange(amount - total);
+    } else {
+      setChange(null);
+    }
+  };
+
   const handleSave = () => {
     if (selectedServices.length === 0) return;
 
-    const selectedItems = availableServices.filter(s => selectedServices.includes(s.id));
-    const total = selectedItems.reduce((acc, curr) => acc + parseFloat(curr.price), 0);
     const servicesNames = selectedItems.map(s => s.name).join(' + ');
 
-    // Pasamos también los IDs y categorías para el backend
     onSave({
       servicesNames,
       total,
       timeIn,
       timeOut,
       paymentMethod,
-      selectedItems, // Array con objetos {id, name, price, category}
+      selectedItems,
     });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity">
-      {/* Modal Container */}
       <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-lg rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Header */}
         <div className="p-8 pb-6 border-b border-card flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-extrabold text-white mb-1">Nuevo Servicio</h2>
@@ -89,10 +119,8 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-8 flex flex-col gap-10 max-h-[60vh] overflow-y-auto">
           
-          {/* Tiempos */}
           <div className="flex items-center gap-6">
             <div className="flex-1 flex flex-col gap-2">
               <label className="text-white/50 text-[11px] font-bold tracking-widest uppercase ml-1">Hora de Entrada</label>
@@ -120,7 +148,6 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
             </div>
           </div>
 
-          {/* Services List */}
           <div className="flex flex-col gap-3">
             <h3 className="text-white/50 text-[11px] font-bold tracking-widest uppercase ml-1 mb-1">Servicios</h3>
             
@@ -161,32 +188,65 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
             )}
           </div>
 
-          {/* Métodos de Pago */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-white/50 text-[11px] font-bold tracking-widest uppercase ml-1 mb-1">Método de Pago</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {paymentMethods.map(method => {
-                const isActive = paymentMethod === method.id;
-                return (
-                  <button
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`py-4 px-2 rounded-2xl text-[13px] font-extrabold border transition-all ${
-                      isActive 
-                        ? 'bg-tertiary/10 border-tertiary text-tertiary shadow-[0_0_20px_rgba(151,176,255,0.15)]' 
-                        : 'bg-card border-white/5 text-white/50 hover:border-white/20 hover:text-white'
-                    }`}
-                  >
-                    {method.label}
-                  </button>
-                )
-              })}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
+              <h3 className="text-white/50 text-[11px] font-bold tracking-widest uppercase ml-1 mb-1">Método de Pago</h3>
+              <div className="grid grid-cols-3 gap-3">
+                {paymentMethods.map(method => {
+                  const isActive = paymentMethod === method.id;
+                  return (
+                    <button
+                      key={method.id}
+                      onClick={() => {
+                        setPaymentMethod(method.id);
+                        if (method.id !== 'Efectivo') {
+                          setAmountReceived('');
+                          setChange(null);
+                        }
+                      }}
+                      className={`py-4 px-2 rounded-2xl text-[13px] font-extrabold border transition-all ${
+                        isActive 
+                          ? 'bg-tertiary/10 border-tertiary text-tertiary shadow-[0_0_20px_rgba(151,176,255,0.15)]' 
+                          : 'bg-card border-white/5 text-white/50 hover:border-white/20 hover:text-white'
+                      }`}
+                    >
+                      {method.label}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
+
+            {paymentMethod === 'Efectivo' && selectedServices.length > 0 && (
+              <div className="flex flex-col gap-4 p-6 bg-white/[0.02] border border-white/5 rounded-[1.5rem] animate-in slide-in-from-top-4 duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-white/40 text-[11px] font-bold uppercase tracking-widest">Total a pagar</span>
+                  <span className="text-white font-black text-xl">{total.toFixed(2)}€</span>
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <label className="text-white/50 text-[11px] font-bold tracking-widest uppercase ml-1">Efectivo recibido</label>
+                  <input 
+                    type="number" 
+                    placeholder="0.00"
+                    value={amountReceived}
+                    onChange={(e) => handleAmountReceivedChange(e.target.value)}
+                    className="w-full bg-card border border-white/5 rounded-2xl py-4 px-4 text-white font-black text-xl outline-none focus:border-primary/50 transition-colors"
+                  />
+                </div>
+
+                {change !== null && (
+                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                    <span className="text-primary text-[11px] font-bold uppercase tracking-widest">Cambio a devolver</span>
+                    <span className="text-primary font-black text-2xl">{change.toFixed(2)}€</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
         </div>
 
-        {/* Footer Actions */}
         <div className="p-8 pt-6 border-t border-card flex items-center gap-5 bg-[#0a0a0a]">
           <button 
             onClick={onClose} 
