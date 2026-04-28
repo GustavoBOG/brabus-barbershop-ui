@@ -301,16 +301,11 @@ export default function Home({ user }) {
                     <div className="flex items-center gap-3 sm:gap-6 min-w-0">
                       <div className="w-1 self-stretch bg-primary rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)] shrink-0 my-1" />
                       <div className="flex flex-col gap-1 min-w-0">
-                      <div className="flex flex-col gap-1 min-w-0">
                         {svc.servicesNames.split(' + ').map((name, i) => (
-                          <div key={i} className="flex items-start gap-2">
-                            <span className="text-white/30 mt-1 shrink-0">•</span>
-                            <span className="text-white font-extrabold text-sm sm:text-base tracking-wide leading-tight truncate">
-                              {name}
-                            </span>
-                          </div>
+                          <span key={i} className="text-white font-extrabold text-sm sm:text-base tracking-wide truncate block">
+                            • {name}
+                          </span>
                         ))}
-                      </div>
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                            <span className="text-white/50 text-[10px] sm:text-[11px] tracking-widest font-bold bg-[#131313] px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-white/5 whitespace-nowrap">
                              {svc.timeIn} - {svc.timeOut}

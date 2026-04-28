@@ -52,17 +52,21 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
     fetchServices();
   }, []);
 
+  const resetForm = () => {
+    setSelectedServices([]);
+    setPaymentMethod('Efectivo');
+    setAmountReceived('');
+    setChange(null);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    setTimeIn(timeStr);
+    setTimeOut(timeStr);
+  };
+
   // Set default times to current time on open
   useEffect(() => {
     if (isOpen) {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-      setTimeIn(timeStr);
-      setTimeOut(timeStr);
-      setSelectedServices([]);
-      setPaymentMethod('Efectivo');
-      setAmountReceived('');
-      setChange(null);
+      resetForm();
     }
   }, [isOpen]);
 
@@ -100,6 +104,7 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
       paymentMethod,
       selectedItems,
     });
+    resetForm();
   };
 
   return (
@@ -112,7 +117,10 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
             <p className="text-white/40 text-[13px] font-bold tracking-wide">Registra los detalles del cliente.</p>
           </div>
           <button 
-            onClick={onClose} 
+            onClick={() => {
+              resetForm();
+              onClose();
+            }} 
             className="w-12 h-12 bg-card rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
           >
             <LuX size={20} className="stroke-[3]" />
@@ -206,7 +214,9 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
                       }}
                       className={`py-4 px-2 rounded-2xl text-[13px] font-extrabold border transition-all ${
                         isActive 
-                          ? 'bg-tertiary/10 border-tertiary text-tertiary shadow-[0_0_20px_rgba(151,176,255,0.15)]' 
+                          ? method.id === 'Efectivo' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.15)]' :
+                            method.id === 'Tarjeta' ? 'bg-blue-500/10 border-blue-500 text-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.15)]' :
+                            'bg-amber-500/10 border-amber-500 text-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.15)]'
                           : 'bg-card border-white/5 text-white/50 hover:border-white/20 hover:text-white'
                       }`}
                     >
@@ -249,7 +259,10 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
 
         <div className="p-8 pt-6 border-t border-card flex items-center gap-5 bg-[#0a0a0a]">
           <button 
-            onClick={onClose} 
+            onClick={() => {
+              resetForm();
+              onClose();
+            }} 
             className="flex-1 py-5 rounded-2xl border border-white/20 text-white/70 font-bold hover:bg-white/5 hover:text-white transition-colors"
           >
             Cancelar

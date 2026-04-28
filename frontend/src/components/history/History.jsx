@@ -214,11 +214,11 @@ export default function History({ user }) {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="text-left bg-black/20">
-                      <th className="px-6 py-3 text-[9px] text-white/20 font-bold uppercase tracking-widest">Hora</th>
-                      <th className="px-6 py-3 text-[9px] text-white/20 font-bold uppercase tracking-widest">Servicio / Cliente</th>
-                      <th className="px-6 py-3 text-[9px] text-white/20 font-bold uppercase tracking-widest">Pago</th>
-                      <th className="px-6 py-3 text-[9px] text-white/20 font-bold uppercase tracking-widest text-right">Monto</th>
+                    <tr className="text-left bg-black/40">
+                      <th className="px-2 sm:px-6 py-4 text-[10px] text-white font-black uppercase tracking-widest">Hora</th>
+                      <th className="px-2 sm:px-6 py-4 text-[10px] text-white font-black uppercase tracking-widest">Servicio</th>
+                      <th className="px-2 sm:px-6 py-4 text-[10px] text-white font-black uppercase tracking-widest">Pago</th>
+                      <th className="px-2 sm:px-6 py-4 text-[10px] text-white font-black uppercase tracking-widest text-right">Monto</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
@@ -237,23 +237,20 @@ export default function History({ user }) {
 
                       return groupedRecords.map((record) => (
                         <tr key={record.id} className="hover:bg-white/[0.02] transition-colors">
-                          <td className="px-6 py-4">
+                          <td className="px-2 sm:px-6 py-4">
                             <span className="text-[10px] font-medium text-white/40">{formatTime(record.created_at)}</span>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col gap-1.5">
+                          <td className="px-2 sm:px-6 py-4 min-w-[120px]">
+                            <div className="flex flex-col gap-1">
                               {(record.client_name || '').split(' + ').map((name, i) => (
-                                <div key={i} className="flex items-start gap-2">
-                                  <span className="text-white/30 mt-1 shrink-0">•</span>
-                                  <span className="text-sm font-bold text-white/90 leading-tight">
-                                    {name}
-                                  </span>
-                                </div>
+                                <span key={i} className="text-[11px] sm:text-sm font-bold text-white/90 truncate block">
+                                  • {name}
+                                </span>
                               ))}
                             </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                          <td className="px-2 sm:px-6 py-4">
+                            <span className={`text-[8px] sm:text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
                               record.payment_method === 'Efectivo' ? 'bg-emerald-500/10 text-emerald-500' :
                               record.payment_method === 'Tarjeta' ? 'bg-blue-500/10 text-blue-500' :
                               'bg-amber-500/10 text-amber-500'
@@ -261,7 +258,7 @@ export default function History({ user }) {
                               {record.payment_method}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-2 sm:px-6 py-4 text-right">
                             <span className="text-sm font-black text-white">
                               {(() => {
                                 // Sumar el total de todos los registros que pertenecen a este mismo combo
