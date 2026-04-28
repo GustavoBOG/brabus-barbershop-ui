@@ -6,8 +6,22 @@ import routes from './routes/index.js';
 const app = express();
 
 // ─── Middlewares ─────────────────────────────────────────
+const allowedOrigins = [
+  'https://brabus-barbershop.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: 'https://brabus-barbershop.vercel.app'
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origen (como herramientas de test o móviles) 
+    // o si el origen está en la lista blanca
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS no permitido para este origen'));
+    }
+  }
 }));
 app.use(morgan('dev'));
 app.use(express.json());

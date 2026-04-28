@@ -33,8 +33,8 @@ export default function DashboardLayout({ children, user, onLogout }) {
         </div>
         
         <nav className="flex-1 py-8 flex flex-col gap-1">
-          <NavItem to="/" icon={<LuHouse size={20} />} label="DASHBOARD" />
-          <NavItem to="/history" icon={<LuClock size={20} />} label="HISTORIAL" />
+          <NavItem to="/" icon={<LuHouse size={20} />} label="DASHBOARD" onClick={() => setIsSidebarOpen(false)} />
+          <NavItem to="/history" icon={<LuClock size={20} />} label="HISTORIAL" onClick={() => setIsSidebarOpen(false)} />
           <NavItem to="/appointments" icon={<LuCalendar size={20} />} label="APPOINTMENTS" disabled />
           <NavItem to="/staff" icon={<LuUsers size={20} />} label="STAFF" disabled />
           <NavItem to="/services" icon={<LuScissors size={20} />} label="SERVICES" disabled />
@@ -44,7 +44,10 @@ export default function DashboardLayout({ children, user, onLogout }) {
         {/* Logout Button */}
         <div className="p-4 border-t border-white/5">
           <button
-            onClick={onLogout}
+            onClick={() => {
+              setIsSidebarOpen(false);
+              onLogout();
+            }}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/5 transition-all"
           >
             <LuLogOut size={18} />
@@ -104,7 +107,7 @@ export default function DashboardLayout({ children, user, onLogout }) {
   );
 }
 
-function NavItem({ to, icon, label, disabled }) {
+function NavItem({ to, icon, label, disabled, onClick }) {
   if (disabled) {
     return (
       <div className="relative w-full flex items-center gap-4 px-8 py-4 text-white/20 cursor-not-allowed">
@@ -117,6 +120,7 @@ function NavItem({ to, icon, label, disabled }) {
   return (
     <NavLink 
       to={to}
+      onClick={onClick}
       className={({ isActive }) => `
         relative w-full flex items-center gap-4 px-8 py-4 transition-all duration-300 group
         ${isActive 
