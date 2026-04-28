@@ -1,0 +1,26 @@
+services:
+  # Backend Service
+  - type: web
+    name: brabus-barbershop-api
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: PORT
+        value: 10000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+  # Frontend Service (Optional, if they want to deploy frontend to Render too)
+  # - type: web
+  #   name: brabus-barbershop-ui
+  #   env: static
+  #   rootDir: frontend
+  #   buildCommand: npm install && npm run build
+  #   publishDir: dist
