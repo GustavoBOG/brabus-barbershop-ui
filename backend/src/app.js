@@ -6,7 +6,9 @@ import routes from './routes/index.js';
 const app = express();
 
 // ─── Middlewares ─────────────────────────────────────────
-app.use(cors());
+app.use(cors({
+  origin: 'https://brabus-barbershop.vercel.app'
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 
