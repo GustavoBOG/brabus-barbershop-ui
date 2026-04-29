@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LuHouse, LuCalendar, LuUsers, LuSettings, LuScissors, LuBell, LuSearch, LuMenu, LuX, LuLogOut, LuClock } from 'react-icons/lu';
+import { LuHouse, LuCalendar, LuUsers, LuSettings, LuScissors, LuMenu, LuX, LuLogOut, LuClock } from 'react-icons/lu';
 
 export default function DashboardLayout({ children, user, onLogout }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -56,46 +56,16 @@ export default function DashboardLayout({ children, user, onLogout }) {
         </div>
       </aside>
 
-      {/* Contenedor Principal (Topbar + Contenido) */}
+      {/* Contenedor Principal */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen w-full relative">
-        {/* Topbar */}
-        <header className="h-20 lg:h-24 px-4 lg:px-8 flex items-center justify-between border-b border-white/5">
-          <div className="flex items-center gap-4">
-            <button className="lg:hidden text-white/70 hover:text-white" onClick={() => setIsSidebarOpen(true)}>
-              <LuMenu size={24} />
-            </button>
-            {/* Search container */}
-            <div className="relative group hidden sm:block">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <LuSearch size={18} className="text-white/40" />
-              </div>
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="bg-card text-sm text-white/80 rounded-xl outline-none pl-10 pr-4 py-2 lg:py-3 w-48 lg:w-72 border border-white/5 focus:border-white/20 transition-all placeholder:text-white/30"
-              />
-            </div>
-          </div>
-
-          {/* Right Header */}
-          <div className="flex items-center gap-4 lg:gap-6">
-            <div className="flex items-center gap-3 lg:gap-4 text-white/40">
-              <button className="hover:text-primary transition-colors hidden sm:block">
-                <LuBell size={20} />
-              </button>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="text-sm font-bold text-white">{user?.full_name || 'Barbero'}</span>
-                <span className="text-[10px] uppercase tracking-widest text-primary font-bold">
-                  {user?.role === 'admin' ? 'ADMINISTRADOR' : 'MASTER BARBER'}
-                </span>
-              </div>
-              <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-card border-2 border-primary/30 overflow-hidden">
-                <img src={user?.avatar_url || "https://i.pravatar.cc/150?u=default"} alt="Profile" className="w-full h-full object-cover" />
-              </div>
-            </div>
-          </div>
+        {/* Topbar minimalista — solo para el botón hamburguesa en móvil */}
+        <header className="lg:hidden h-16 px-4 flex items-center border-b border-white/5 bg-background">
+          <button
+            className="w-10 h-10 flex items-center justify-center bg-card border border-white/10 rounded-xl text-white/70 hover:text-white transition-colors"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <LuMenu size={22} />
+          </button>
         </header>
 
         {/* Content Area */}
