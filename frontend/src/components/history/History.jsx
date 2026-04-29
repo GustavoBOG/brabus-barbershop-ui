@@ -18,6 +18,37 @@ export default function History({ user }) {
     return eachDayOfInterval({ start, end });
   }, [viewDate]);
 
+  // Agrupa todos los turnos de un día en un único objeto acumulado
+  const mergeShiftsForDay = (dayShifts) => {
+    if (!dayShifts || dayShifts.length === 0) return null;
+    if (dayShifts.length === 1) return dayShifts[0];
+
+    // Combinar todos los work_records de todos los turnos del día
+    const allRecords = dayShifts.flatMap(s => s.work_records || []);
+    const totalRevenue = allRecords.reduce((sum, r) => sum + parseFloat(r.total_price), 0);
+    const commission = totalRevenue * 0.5;
+
+    return {
+      ...dayShifts[0],
+      work_records: allRecords,
+      stats: {
+        totalClients: allRecords.length,
+        totalRevenue,
+        commission,
+        byCategory: {
+          cut: allRecords.filter(r => r.services?.category === 'cut').length,
+          beard: allRecords.filter(r => r.services?.category === 'beard').length,
+          other: allRecords.filter(r => r.services?.category === 'other').length,
+        },
+        byPayment: {
+          Efectivo: allRecords.filter(r => r.payment_method === 'Efectivo').reduce((s, r) => s + parseFloat(r.total_price), 0),
+          Tarjeta: allRecords.filter(r => r.payment_method === 'Tarjeta').reduce((s, r) => s + parseFloat(r.total_price), 0),
+          Transferencia: allRecords.filter(r => r.payment_method === 'Transferencia').reduce((s, r) => s + parseFloat(r.total_price), 0),
+        }
+      }
+    };
+  };
+
   const loadHistory = async () => {
     try {
       setLoading(true);
@@ -25,9 +56,9 @@ export default function History({ user }) {
       const to = format(weekDays[6], 'yyyy-MM-dd');
       const data = await historyApi.getShifts(user.id, from, to);
       setShifts(data);
-      
-      const todayInShifts = data.find(s => isSameDay(new Date(s.start_time), selectedDate));
-      setSelectedShift(todayInShifts || null);
+
+      const todayInShifts = data.filter(s => isSameDay(new Date(s.start_time), selectedDate));
+      setSelectedShift(mergeShiftsForDay(todayInShifts));
     } catch (error) {
       console.error('Error loading history:', error);
     } finally {
@@ -40,8 +71,8 @@ export default function History({ user }) {
   }, [viewDate]);
 
   useEffect(() => {
-    const shiftForSelectedDate = shifts.find(s => isSameDay(new Date(s.start_time), selectedDate));
-    setSelectedShift(shiftForSelectedDate || null);
+    const dayShifts = shifts.filter(s => isSameDay(new Date(s.start_time), selectedDate));
+    setSelectedShift(mergeShiftsForDay(dayShifts));
   }, [selectedDate, shifts]);
 
   const handlePrevWeek = () => setViewDate(prev => subDays(prev, 7));
@@ -109,7 +140,8 @@ export default function History({ user }) {
               {weekDays.map((day) => {
                 const dayShifts = shifts.filter(s => isSameDay(new Date(s.start_time), day));
                 const isSelected = isSameDay(day, selectedDate);
-                const hasActivity = dayShifts.length > 0;
+                // Sólo cuenta días con al menos un work_record real
+                const hasActivity = dayShifts.some(s => (s.work_records || []).length > 0);
 
                 return (
                   <motion.button

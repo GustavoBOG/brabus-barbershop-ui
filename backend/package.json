@@ -6,7 +6,11 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "db:reset": "node full_reset.js",
+    "db:clean": "node clean_database.js --data-only",
+    "db:clean:all": "node clean_database.js --all",
+    "db:services": "node clean_database.js --reset-services"
   },
   "keywords": [],
   "author": "",

@@ -37,7 +37,7 @@ export default function DashboardLayout({ children, user, onLogout }) {
           <NavItem to="/history" icon={<LuClock size={20} />} label="HISTORIAL" onClick={() => setIsSidebarOpen(false)} />
           <NavItem to="/appointments" icon={<LuCalendar size={20} />} label="APPOINTMENTS" disabled />
           <NavItem to="/staff" icon={<LuUsers size={20} />} label="STAFF" disabled />
-          <NavItem to="/services" icon={<LuScissors size={20} />} label="SERVICES" disabled />
+          <NavItem to="/services" icon={<LuScissors size={20} />} label="SERVICES" onClick={() => setIsSidebarOpen(false)} />
           <NavItem to="/inventory" icon={<LuSettings size={20} />} label="INVENTORY" disabled />
         </nav>
 

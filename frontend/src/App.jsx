@@ -4,6 +4,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import Home from './components/home/Home';
 import LoginScreen from './components/auth/LoginScreen';
 import History from './components/history/History';
+import Services from './components/services/Services';
 import { authApi } from './services/api';
 
 function App() {
@@ -12,15 +13,30 @@ function App() {
 
   // Verificar si hay sesión guardada al cargar
   useEffect(() => {
-    const savedUser = localStorage.getItem('brabus_user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch {
-        localStorage.removeItem('brabus_user');
+    const initAuth = async () => {
+      const savedUser = localStorage.getItem('brabus_user');
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          
+          // Si no tiene el rol, intentamos recuperarlo del servidor
+          if (!parsedUser.role) {
+            const profile = await authApi.getProfile(parsedUser.id);
+            const fullUser = { ...parsedUser, ...profile };
+            setUser(fullUser);
+            localStorage.setItem('brabus_user', JSON.stringify(fullUser));
+          } else {
+            setUser(parsedUser);
+          }
+        } catch (error) {
+          console.error('Error initializing auth:', error);
+          localStorage.removeItem('brabus_user');
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const handleLogin = async (email, password) => {
@@ -72,6 +88,19 @@ function App() {
             user ? (
               <DashboardLayout user={user} onLogout={handleLogout}>
                 <History user={user} />
+              </DashboardLayout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+
+        <Route 
+          path="/services" 
+          element={
+            user ? (
+              <DashboardLayout user={user} onLogout={handleLogout}>
+                <Services user={user} />
               </DashboardLayout>
             ) : (
               <Navigate to="/login" />

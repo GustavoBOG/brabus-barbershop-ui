@@ -76,17 +76,26 @@ export function useShift(userId) {
   const handleStartShift = async () => {
     try {
       setLoading(true);
+      // Primero pedimos al backend. Si falla, NO tocamos el estado local.
       const shift = await shiftsApi.start(userId);
+
+      // Solo reseteamos la UI si el backend confirmó la creación del turno
       setCurrentShift(shift);
       setShiftStatus('activo');
       setServicesList([]);
+      setElapsedTime(0);
 
       const newIntervals = [{ from: new Date().toISOString(), to: null, duration: 0, type: 'work' }];
       setIntervals(newIntervals);
       localStorage.setItem(`shift_intervals_${shift.id}`, JSON.stringify(newIntervals));
     } catch (error) {
       console.error('Error al iniciar turno:', error);
-      alert('Error: ' + error.message);
+      // Mensaje más claro si el bloqueo es por turno ya cerrado hoy
+      if (error.message && error.message.includes('turno por día')) {
+        alert('⚠️ Ya cerraste un turno hoy.\nSolo se permite un turno por día. Revisa el historial para ver tus registros.');
+      } else {
+        alert('Error al iniciar turno: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }

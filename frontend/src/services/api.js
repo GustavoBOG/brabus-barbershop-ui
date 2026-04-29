@@ -43,6 +43,20 @@ export const authApi = {
 
 export const servicesApi = {
   getAll: () => request('/services'),
+  create: (service) =>
+    request('/services', {
+      method: 'POST',
+      body: JSON.stringify(service),
+    }),
+  update: (id, service) =>
+    request(`/services/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(service),
+    }),
+  delete: (id) =>
+    request(`/services/${id}`, {
+      method: 'DELETE',
+    }),
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -52,11 +66,18 @@ export const servicesApi = {
 export const shiftsApi = {
   getActive: (barberId) => request(`/shifts/active/${barberId}`),
 
-  start: (barberId) =>
-    request('/shifts/start', {
+  start: (barberId) => {
+    // Calculamos el inicio y fin del día en la zona horaria local del cliente
+    // y lo enviamos como strings ISO (UTC) al backend.
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).toISOString();
+    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
+
+    return request('/shifts/start', {
       method: 'POST',
-      body: JSON.stringify({ barber_id: barberId }),
-    }),
+      body: JSON.stringify({ barber_id: barberId, start_of_day: startOfDay, end_of_day: endOfDay }),
+    });
+  },
 
   updateStatus: (shiftId, status) =>
     request(`/shifts/${shiftId}/status`, {
