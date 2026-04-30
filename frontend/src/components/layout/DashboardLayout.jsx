@@ -8,12 +8,12 @@ export default function DashboardLayout({ children, user, onLogout }) {
   return (
     <div className="min-h-screen bg-background flex font-sans text-white overflow-hidden relative">
       {/* Overlay para móvil */}
-      {isSidebarOpen && (
+      {isSidebarOpen ? (
         <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
-      )}
+      ) : null}
 
       {/* Sidebar */}
       <aside className={`w-64 fixed inset-y-0 left-0 bg-background border-r border-white/5 flex flex-col z-50 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
@@ -101,9 +101,9 @@ function NavItem({ to, icon, label, disabled, onClick }) {
     >
       {({ isActive }) => (
         <>
-          {isActive && (
+          {isActive ? (
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />
-          )}
+          ) : null}
           <span className={isActive ? 'text-primary' : 'text-white/40 group-hover:text-white/70'}>{icon}</span>
           <span className="text-sm font-bold tracking-widest uppercase">{label}</span>
         </>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { LuCalendar, LuTrendingUp, LuChevronRight, LuChevronLeft, LuScissors, LuSearch, LuLoader, LuFilter } from 'react-icons/lu';
+import { LuCalendar, LuTrendingUp, LuChevronRight, LuChevronLeft, LuScissors } from 'react-icons/lu';
 import { historyApi } from '../../services/api';
 import { format, startOfDay, startOfWeek, endOfWeek, eachDayOfInterval, addDays, subDays, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -167,9 +167,9 @@ export default function History({ user }) {
                       {format(day, 'd')}
                     </p>
                     
-                    {hasActivity && !isSelected && (
+                    {hasActivity && !isSelected ? (
                       <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                    )}
+                    ) : null}
                   </motion.button>
                 );
               })}

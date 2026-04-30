@@ -18,11 +18,11 @@ export default function RegisterServiceButton({ shiftStatus, onClick }) {
         <span>Registrar Servicio</span>
       </div>
 
-      {!isActive && (
+      {!isActive ? (
         <p className="absolute bottom-2 left-0 w-full text-center text-[9px] tracking-[0.4em] font-black opacity-40">
           Inicia turno para comenzar
         </p>
-      )}
+      ) : null}
     </button>
   );
 }

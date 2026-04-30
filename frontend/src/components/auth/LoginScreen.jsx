@@ -52,12 +52,12 @@ export default function LoginScreen({ onLogin }) {
           <h2 className="text-white text-xl font-extrabold mb-1">Bienvenido</h2>
           <p className="text-white/40 text-sm mb-8">Inicia sesión para acceder a tu turno</p>
 
-          {error && (
+          {error ? (
             <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6">
               <LuTriangleAlert size={18} className="text-red-500 shrink-0" />
               <span className="text-red-400 text-sm font-medium">{error}</span>
             </div>
-          )}
+          ) : null}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">

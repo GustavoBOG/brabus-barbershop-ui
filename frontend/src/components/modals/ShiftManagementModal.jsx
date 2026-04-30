@@ -53,17 +53,17 @@ export default function ShiftManagementModal({
         </div>
 
         {/* Timer Display */}
-        {(shiftStatus === 'activo' || shiftStatus === 'pausa') && (
+        {(shiftStatus === 'activo' || shiftStatus === 'pausa') ? (
           <div className="p-8 pb-4 text-center">
             <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Tiempo Transcurrido</p>
             <p className="text-white text-5xl font-black tracking-tighter tabular-nums">
               {formatElapsedTime(elapsedTime)}
             </p>
           </div>
-        )}
+        ) : null}
 
         {/* Intervals Summary */}
-        {intervals.length > 0 && (
+        {intervals.length > 0 ? (
           <div className="px-8 py-4 max-h-40 overflow-y-auto">
              <div className="grid grid-cols-3 text-[9px] font-black uppercase tracking-widest text-white/20 mb-3 px-2">
                 <span>Desde</span>
@@ -81,9 +81,9 @@ export default function ShiftManagementModal({
                       <span className="text-white font-bold text-[11px]">
                         {new Date(interval.from).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </span>
-                      {interval.type === 'break' && (
+                      {interval.type === 'break' ? (
                         <span className="text-amber-500 text-[8px] font-black uppercase tracking-tighter">Descanso</span>
-                      )}
+                      ) : null}
                     </div>
                     <span className="text-white font-bold text-[11px]">
                       {interval.to 
@@ -103,7 +103,7 @@ export default function ShiftManagementModal({
                 ))}
               </div>
           </div>
-        )}
+        ) : null}
 
         {/* Actions */}
         <div className="p-8 flex flex-col gap-4">

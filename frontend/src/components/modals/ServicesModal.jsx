@@ -181,7 +181,7 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
                       <div className={`w-7 h-7 rounded-[0.5rem] border-2 flex items-center justify-center transition-all ${
                         isSelected ? 'bg-primary border-primary' : 'border-white/20'
                       }`}>
-                        {isSelected && <LuCheck size={16} className="text-[#0A0A0A] stroke-[4]" />}
+                        {isSelected ? <LuCheck size={16} className="text-[#0A0A0A] stroke-[4]" /> : null}
                       </div>
                       <span className={`font-extrabold text-lg ${isSelected ? 'text-primary' : 'text-white'}`}>
                         {service.name}
@@ -227,7 +227,7 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
               </div>
             </div>
 
-            {paymentMethod === 'Efectivo' && selectedServices.length > 0 && (
+            {paymentMethod === 'Efectivo' && selectedServices.length > 0 ? (
               <div className="flex flex-col gap-4 p-6 bg-white/[0.02] border border-white/5 rounded-[1.5rem] animate-in slide-in-from-top-4 duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-white/40 text-[11px] font-bold uppercase tracking-widest">Total a pagar</span>
@@ -245,14 +245,14 @@ export default function ServicesModal({ isOpen, onClose, onSave }) {
                   />
                 </div>
 
-                {change !== null && (
+                {change !== null ? (
                   <div className="flex items-center justify-between pt-4 border-t border-white/5">
                     <span className="text-primary text-[11px] font-bold uppercase tracking-widest">Cambio a devolver</span>
                     <span className="text-primary font-black text-2xl">{change.toFixed(2)}€</span>
                   </div>
-                )}
+                ) : null}
               </div>
-            )}
+            ) : null}
           </div>
 
         </div>
