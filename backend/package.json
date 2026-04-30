@@ -7,10 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "db:reset": "node full_reset.js",
-    "db:clean": "node clean_database.js --data-only",
-    "db:clean:all": "node clean_database.js --all",
-    "db:services": "node clean_database.js --reset-services"
+    "db:seed": "node seeds.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +17,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "pg": "^8.20.0"
   }
 }

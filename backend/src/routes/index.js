@@ -4,6 +4,7 @@ import serviceRoutes from './serviceRoutes.js';
 import shiftRoutes from './shiftRoutes.js';
 import workRecordRoutes from './workRecordRoutes.js';
 import historyRoutes from './historyRoutes.js';
+import staffRoutes from './staffRoutes.js';
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.use('/services', serviceRoutes);
 router.use('/shifts', shiftRoutes);
 router.use('/work-records', workRecordRoutes);
 router.use('/history', historyRoutes);
+router.use('/staff', staffRoutes);
 
 export default router;

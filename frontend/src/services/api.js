@@ -121,3 +121,39 @@ export const historyApi = {
   },
 };
 
+// ═══════════════════════════════════════════════════════════
+//  STAFF
+// ═══════════════════════════════════════════════════════════
+
+export const staffApi = {
+  getAll: (from, to) => {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    const qs = params.toString();
+    return request(`/staff${qs ? '?' + qs : ''}`);
+  },
+
+  getById: (id, from, to) => {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    const qs = params.toString();
+    return request(`/staff/${id}${qs ? '?' + qs : ''}`);
+  },
+
+  update: (id, updates) =>
+    request(`/staff/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    }),
+
+  getSchedules: (barberId) => request(`/staff/${barberId}/schedules`),
+
+  manageSchedules: (barberId, schedules) =>
+    request(`/staff/${barberId}/schedules`, {
+      method: 'POST',
+      body: JSON.stringify({ schedules }),
+    }),
+};
+
